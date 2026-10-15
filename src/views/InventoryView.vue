@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useStore } from '../stores/store'
 import ProductForm from '../components/ProductForm.vue'
+import ProductIllustration from '../components/ProductIllustration.vue'
 
 const store = useStore()
 const search = ref('')
@@ -41,7 +42,7 @@ const remove = p => confirm(`Delete ${p.name}?`) && store.deleteProduct(p.id)
       <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead>
       <tbody>
         <tr v-for="p in filtered" :key="p.id">
-          <td>{{ p.name }}</td>
+          <td><span class="product-name"><ProductIllustration :product="p" compact />{{ p.name }}</span></td>
           <td>{{ p.category }}</td>
           <td>₱{{ p.price.toFixed(2) }}</td>
           <td :class="{ bad: p.stock === 0, warn: p.stock > 0 && p.stock <= p.reorder }">

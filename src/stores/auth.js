@@ -4,12 +4,12 @@ import { ref, computed } from 'vue'
 const USERS_KEY = 'mini-store-users'
 const SESSION_KEY = 'mini-store-session'
 
-// Your owner account. It is always present, even if old data is saved in the browser.
-const OWNER = { username: 'arojoshua185@gmail.com', password: 'aro0123', name: 'Store Owner' }
+
+const OWNER = { username: 'aroko@gmail.com', password: 'aro0123', name: 'Store Owner' }
 
 function loadUsers() {
   const saved = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
-  // drop the old demo account and any stale copy of the owner, then add the current owner
+ 
   const others = saved.filter(u => u.username !== OWNER.username && u.username !== 'admin')
   return [OWNER, ...others]
 }

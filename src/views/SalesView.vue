@@ -11,9 +11,12 @@ const fmt = d => new Date(d).toLocaleString('en-PH', { dateStyle: 'medium', time
     <p v-if="!store.sales.length" class="muted">No sales yet. Complete an order in Point of Sale.</p>
     <ul v-else class="list">
       <li v-for="s in store.sales" :key="s.id" class="sale">
-        <div>
-          <b>{{ fmt(s.date) }}</b>
-          <small>{{ s.items.map(i => `${i.qty}× ${i.name}`).join(', ') }}</small>
+        <div class="sale-summary">
+          <span class="sale-icon" aria-hidden="true">🧾</span>
+          <span>
+            <b>{{ fmt(s.date) }}</b>
+            <small>{{ s.items.map(i => `${i.qty}× ${i.name}`).join(', ') }}</small>
+          </span>
         </div>
         <b>₱{{ s.total.toFixed(2) }}</b>
       </li>

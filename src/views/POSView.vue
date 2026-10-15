@@ -1,11 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useStore } from '../stores/store'
+import ProductIllustration from '../components/ProductIllustration.vue'
 
 const store = useStore()
 const search = ref('')
 const cash = ref(0)
 const receipt = ref(null)
+const hoveredProduct = ref(null)
 
 const items = computed(() =>
   store.products.filter(p => p.name.toLowerCase().includes(search.value.toLowerCase())))
@@ -28,10 +30,14 @@ function pay() {
       <input v-model="search" placeholder="Search products" />
       <div class="grid">
         <button v-for="p in items" :key="p.id" class="item" :disabled="p.stock === 0"
-                @click="store.addToCart(p)">
+                @click="store.addToCart(p)"
+                @mouseenter="hoveredProduct = p.id"
+                @mouseleave="hoveredProduct = null">
+          <ProductIllustration :product="p" />
           <b>{{ p.name }}</b>
           <span>₱{{ p.price.toFixed(2) }}</span>
           <small :class="{ bad: p.stock === 0 }">{{ p.stock === 0 ? 'Out of stock' : p.stock + ' in stock' }}</small>
+          <small v-if="hoveredProduct === p.id && p.stock > 0" class="hover-hint">Click to add this product</small>
         </button>
       </div>
     </section>

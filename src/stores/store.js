@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
+import { useAuth } from './auth'
 
 const KEY = 'mini-store-v1'
+const OWNER_USERNAME = 'arojoshua185@gmail.com'
 const seed = () => [
   // Food
   { id: 1, name: 'Instant Noodles', category: 'Food', price: 15, stock: 40, reorder: 10 },
@@ -30,14 +32,50 @@ const seed = () => [
 ]
 
 export const useStore = defineStore('store', () => {
-  const saved = JSON.parse(localStorage.getItem(KEY) || 'null')
-  const products = ref(saved?.products ?? seed())
-  const sales = ref(saved?.sales ?? [])
+  const auth = useAuth()
+  const products = ref(seed())
+  const sales = ref([])
   const cart = ref([])
+  let activeStorageKey = ''
 
-  // persist everything except the cart
+  const accountStorageKey = username => `${KEY}:${encodeURIComponent(username)}`
+
+  function loadAccount(username) {
+    activeStorageKey = ''
+    cart.value = []
+
+    if (!username) {
+      products.value = seed()
+      sales.value = []
+      return
+    }
+
+    const key = accountStorageKey(username)
+    let saved = localStorage.getItem(key)
+
+    // Move the old shared data into the original owner's account storage.
+    if (!saved && username === OWNER_USERNAME) {
+      saved = localStorage.getItem(KEY)
+      if (saved) localStorage.setItem(key, saved)
+    }
+
+    const data = JSON.parse(saved || 'null')
+    products.value = data?.products ?? seed()
+    sales.value = data?.sales ?? []
+    activeStorageKey = key
+
+    if (!saved) {
+      localStorage.setItem(key, JSON.stringify({ products: products.value, sales: sales.value }))
+    }
+  }
+
+  watch(() => auth.current?.username, loadAccount, { immediate: true })
+
+  // Each signed-in account gets its own saved products and sales; the cart stays temporary.
   watch([products, sales], () => {
-    localStorage.setItem(KEY, JSON.stringify({ products: products.value, sales: sales.value }))
+    if (activeStorageKey) {
+      localStorage.setItem(activeStorageKey, JSON.stringify({ products: products.value, sales: sales.value }))
+    }
   }, { deep: true })
 
   const lowStock = computed(() => products.value.filter(p => p.stock <= p.reorder))

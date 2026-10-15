@@ -1,10 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useAuth } from '../stores/auth'
 import FeatureCard from '../components/FeatureCard.vue'
 
 const auth = useAuth()
-const showReq = ref(false)
 
 const features = [
   { title: 'Inventory (CRUD)', text: 'Create, read, update and delete products, with search and category filter.' },
@@ -12,15 +11,6 @@ const features = [
   { title: 'Sales History', text: 'See every completed sale and your total revenue.' },
   { title: 'Dashboard', text: 'Daily sales, stock value, and a list of items that need restocking.' }
 ]
-const requirements = [
-  'Node.js (LTS) and npm',
-  'Visual Studio Code',
-  'Vue 3 with Vite',
-  'Vue Router for page navigation',
-  'Pinia for shared state',
-  'A modern web browser'
-]
-
 onMounted(() => { document.title = 'Mini Store | Home' })
 </script>
 
@@ -45,14 +35,5 @@ onMounted(() => { document.title = 'Mini Store | Home' })
       </FeatureCard>
     </section>
 
-    <section class="panel">
-      <div class="row between">
-        <h2>Project requirements</h2>
-        <button class="btn" @click="showReq = !showReq">{{ showReq ? 'Hide' : 'Show' }}</button>
-      </div>
-      <ul v-show="showReq" class="list">
-        <li v-for="r in requirements" :key="r">{{ r }}</li>
-      </ul>
-    </section>
   </main>
 </template>
